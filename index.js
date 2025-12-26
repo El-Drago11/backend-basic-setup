@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import { dbconnection } from "./config/dbConnection.js";
 import homeRouter from "./src/routes/admin/HomeRoute.js";
+import adminAuthRouter from "./src/routes/admin/AdminAuthRoute.js";
 
 dotenv.config()
 const app = express()
@@ -24,6 +25,7 @@ app.use("", express.static(path.join(__dirname, "")));
 
 //routers
 app.use('/api/v1/admin',homeRouter)
+app.use('/api/v1/admin/auth',adminAuthRouter)
 
 app.get("/", (_, resp) => {
     return resp.status(200).json({ message: "Application running sucessfully!" })

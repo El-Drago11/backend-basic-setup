@@ -7,7 +7,12 @@ export const AddHomePageData = async (req, res) => {
     const bannerFile = req.files?.banner_image?.[0];
 
     if (!banner_name || !bannerFile) {
-      return handleResponse(res, 400, "Banner name and image are required");
+      return handleResponse(
+        400,
+        "Banner name and image are required",
+        {},
+        res
+      );
     }
 
     const data = await HomePageSchema.create({
@@ -23,6 +28,6 @@ export const AddHomePageData = async (req, res) => {
     );
   } catch (error) {
     console.error(error);
-    return handleResponse(500, "Internal Server Error",error.message,res);
+    return handleResponse(500, "Internal Server Error", error.message, res);
   }
 };
