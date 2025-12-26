@@ -1,5 +1,5 @@
 import { JWT_SECRET } from "../config/jwtConfig.js";
-import User from "../src/model/UserModel.js";
+import User from "../src/models/UserModel.js";
 import { verifyToken } from "../utils/auth.js";
 import handleResponse from "../utils/http-response.js";
 

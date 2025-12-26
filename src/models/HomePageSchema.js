@@ -11,7 +11,7 @@ const HomePageSchema = new mongoose.Schema(
 
                 if (val.startsWith("http")) return val;
 
-                return `${process.env.IMAGE_URL}${val}`;
+                return `${process.env.IMAGE_URL}/${val}`;
             },
         },
         banner_name: {
