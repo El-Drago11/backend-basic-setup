@@ -3,6 +3,8 @@ import { comparePassword, generateOTP, generateToken, hashPassword } from "../..
 import handleResponse from "../../../utils/http-response.js";
 import User from "../../models/UserModel.js";
 import { sendEmail } from "../../../config/emailConfig.js";
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from "../../../config/jwtConfig.js";
 
 //Login User
 export const adminlogin = async (req, resp) => {
@@ -172,72 +174,6 @@ export const sendVerifyOTP = async (req, resp) => {
     }
 };
 
-//verify email and phone number
-export const verifyEmailPhone = async (req, resp) => {
-    try {
-        const { email, phone, type, otp, id } = req.body;
-
-        if (!type || !otp || !id) {
-            return handleResponse(400, "ID, Type and OTP are required", {}, resp);
-        }
-
-        let record = await User.findById(id);
-        let modelType = "User";
-
-        if (!record) {
-            record = await Store.findById(id);
-            modelType = "Store";
-        }
-
-        if (!record) {
-            return handleResponse(404, "User/Store not found", {}, resp);
-        }
-
-        if (String(record.otp) !== String(otp)) {
-            return handleResponse(400, "Invalid OTP", {}, resp);
-        }
-
-        if (type === "phone") {
-            if (!phone) return handleResponse(400, "Phone is required", {}, resp);
-            record.phone_verified = true;
-        } else if (type === "email") {
-            if (!email) return handleResponse(400, "Email is required", {}, resp);
-            record.email_verified = true;
-        } else {
-            return handleResponse(400, "Invalid type. Allowed types: email, phone", {}, resp);
-        }
-
-        record.otp = null;
-
-        let generatedPassword = null;
-
-        if (type === "email") {
-            generatedPassword = generatedPassword(10);
-            const hashedPassword = await hashPassword(generatedPassword);
-            record.password = hashedPassword;
-        }
-
-        await record.save();
-
-        if (type === "email") {
-            await sendEmail({
-                to: email,
-                subject: "Login Credentials",
-                html: `
-                    <p><strong>Login Credentials (${modelType})</strong></p>
-                    <p>Email: ${email}</p>
-                    <p>Password: <strong>${generatedPassword}</strong></p>
-                    `
-            });
-        }
-
-        return handleResponse(200, `${type === "phone" ? "Phone Number" : "Email"} Verified Successfully`, { verifiedFor: modelType }, resp);
-
-    } catch (err) {
-        return handleResponse(500, err?.message || "Server Error", {}, resp);
-    }
-};
-
 // change pasword
 export const changePasword = async (req, resp) => {
     try {
@@ -308,19 +244,40 @@ export const forgotPasword = async (req, resp) => {
 // verify otp
 export const verifyCode = async (req, resp) => {
     try {
+
         const { email, otp } = req.body;
+        if (email == null || email == undefined) return handleResponse(400, "Email is required!", {}, resp);
+        if (otp == null || otp == undefined) return handleResponse(400, "OTP is required!", {}, resp);
 
         const user = await User.findOne({ email })
-
         if (!user) return handleResponse(404, "User not found", {}, resp);
-
 
         if (user.otp != otp) return handleResponse(400, "Invalid OTP", {}, resp)
 
         user.otp = null;
         await user.save()
 
-        return handleResponse(200, "OTP verified Successfully", {}, resp)
+        const token = jwt.sign({
+            _id: user._id,
+            email: user.email,
+            role: user.role,
+        },
+            JWT_SECRET,
+            { expiresIn: '5m' }
+        );
+
+        const options = {
+            expires: new Date(Date.now() + 5 * 60 * 1000),
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax'
+        };
+
+        return resp.cookie("otp_token", token, options).status(200).json({
+            success: true,
+            data: {},
+            message: 'OTP Verifed Successfully!'
+        })
 
     } catch (err) {
         return handleResponse(500, err?.message, {}, resp)
@@ -341,8 +298,82 @@ export const resetPassword = async (req, resp) => {
         user.password = hashedPassword;
         await user.save()
 
+        resp.clearCookie("otp_token", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+            path: "/",
+        });
+
         return handleResponse(200, "Password reset Successfully", {}, resp)
     } catch (err) {
         return handleResponse(500, err?.message, {}, resp)
     }
 }
+
+
+//verify email and phone number
+export const verifyEmailPhone = async (req, resp) => {
+    try {
+        const { email, phone, type, otp, id } = req.body;
+
+        if (!type || !otp || !id) {
+            return handleResponse(400, "ID, Type and OTP are required", {}, resp);
+        }
+
+        let record = await User.findById(id);
+        let modelType = "User";
+
+        if (!record) {
+            record = await Store.findById(id);
+            modelType = "Store";
+        }
+
+        if (!record) {
+            return handleResponse(404, "User/Store not found", {}, resp);
+        }
+
+        if (String(record.otp) !== String(otp)) {
+            return handleResponse(400, "Invalid OTP", {}, resp);
+        }
+
+        if (type === "phone") {
+            if (!phone) return handleResponse(400, "Phone is required", {}, resp);
+            record.phone_verified = true;
+        } else if (type === "email") {
+            if (!email) return handleResponse(400, "Email is required", {}, resp);
+            record.email_verified = true;
+        } else {
+            return handleResponse(400, "Invalid type. Allowed types: email, phone", {}, resp);
+        }
+
+        record.otp = null;
+
+        let generatedPassword = null;
+
+        if (type === "email") {
+            generatedPassword = generatedPassword(10);
+            const hashedPassword = await hashPassword(generatedPassword);
+            record.password = hashedPassword;
+        }
+
+        await record.save();
+
+        if (type === "email") {
+            await sendEmail({
+                to: email,
+                subject: "Login Credentials",
+                html: `
+                    <p><strong>Login Credentials (${modelType})</strong></p>
+                    <p>Email: ${email}</p>
+                    <p>Password: <strong>${generatedPassword}</strong></p>
+                    `
+            });
+        }
+
+        return handleResponse(200, `${type === "phone" ? "Phone Number" : "Email"} Verified Successfully`, { verifiedFor: modelType }, resp);
+
+    } catch (err) {
+        return handleResponse(500, err?.message || "Server Error", {}, resp);
+    }
+};

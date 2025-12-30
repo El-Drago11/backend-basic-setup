@@ -1,7 +1,7 @@
 import express from 'express'
 import { userImagesUpload } from '../../../utils/multer.js';
 import { adminEditProfile, adminlogin, changePasword, forgotPasword, getAdminProfile, resetPassword, sendVerifyOTP, verifyCode, verifyEmailPhone } from '../../controllers/adminController/AdminAuthController.js';
-import { authenticateToken } from '../../../middleware/auth.js';
+import { authenticateOtpToken, authenticateToken } from '../../../middleware/auth.js';
 
 const adminAuthRouter = express.Router();
 
@@ -24,12 +24,12 @@ adminAuthRouter.post("/forgot-password",forgotPasword);
 adminAuthRouter.post("/verify-otp",verifyCode);
 
 //reset password
-adminAuthRouter.post("/reset-password",resetPassword)
+adminAuthRouter.post("/reset-password",authenticateOtpToken,resetPassword)
 
 //send verification otp to mobile/email
 adminAuthRouter.post("/send-otp",sendVerifyOTP);
 
 //verify email/phone number otp
-adminAuthRouter.post("/verify-email-phone-otp",verifyEmailPhone);
+adminAuthRouter.post("/verify-email-phone-otp",authenticateToken,verifyEmailPhone);
 
 export default adminAuthRouter;
