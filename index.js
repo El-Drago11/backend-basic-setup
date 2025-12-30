@@ -7,10 +7,16 @@ import path from "path";
 import { dbconnection } from "./config/dbConnection.js";
 import homeRouter from "./src/routes/admin/HomeRoute.js";
 import adminAuthRouter from "./src/routes/admin/AdminAuthRoute.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config()
 const app = express()
-app.use(cors())
+
+app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json())
 app.use(helmet());
 dbconnection()
@@ -18,7 +24,6 @@ dbconnection()
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'))
 app.use("", express.static(path.join(__dirname, "")));
