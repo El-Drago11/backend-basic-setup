@@ -1,5 +1,5 @@
 {
-  "name": "derma-tech-backend",
+  "name": "project-name",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JoshiRohit6441/derma-tech-backend.git"
+    "url": "git+{{giturl}}"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JoshiRohit6441/derma-tech-backend/issues"
+    "url": "{{giturl}}/issues"
   },
-  "homepage": "https://github.com/JoshiRohit6441/derma-tech-backend#readme",
+  "homepage": "{{giturl}}#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",

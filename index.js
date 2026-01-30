@@ -5,7 +5,6 @@ import helmet from "helmet";
 import { fileURLToPath } from "url";
 import path from "path";
 import { dbconnection } from "./config/dbConnection.js";
-import homeRouter from "./src/routes/admin/HomeRoute.js";
 import adminAuthRouter from "./src/routes/admin/AdminAuthRoute.js";
 import cookieParser from "cookie-parser";
 
@@ -29,7 +28,6 @@ app.use(express.static('public'))
 app.use("", express.static(path.join(__dirname, "")));
 
 //routers
-app.use('/api/v1/admin',homeRouter)
 app.use('/api/v1/admin/auth',adminAuthRouter)
 
 app.get("/", (_, resp) => {

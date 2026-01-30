@@ -10,4 +10,5 @@ const userImagesUpload = userUpload.fields([
     { name: "profile_pic", maxCount: 1 }
 ])
 
+
 export { HomeImagesUpload, userImagesUpload}
