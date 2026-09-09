@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
-import { email_from, email_host, email_pass, email_port, email_user } from "../utils/envImporter";
+import { email_from, email_host, email_pass, email_port, email_user } from "../utils/envImporter.js";
 
 let transporter = nodemailer.createTransport({
   host: email_host,
