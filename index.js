@@ -7,13 +7,14 @@ import path from "path";
 import { dbconnection } from "./config/dbConnection.js";
 import adminAuthRouter from "./src/routes/admin/AdminAuthRoute.js";
 import cookieParser from "cookie-parser";
+import { local_admin, local_frontend } from "./utils/envImporter.js";
 
 dotenv.config()
 const app = express()
 
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [local_frontend,local_admin],
   credentials: true,
 }));
 app.use(express.json())
