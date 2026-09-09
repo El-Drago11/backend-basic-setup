@@ -4,7 +4,7 @@ import handleResponse from "../../../utils/http-response.js";
 import User from "../../models/UserModel.js";
 import { sendEmail } from "../../../config/emailConfig.js";
 import jwt from 'jsonwebtoken'
-import { JWT_SECRET } from "../../../config/jwtConfig.js";
+import { JWT_SECRET } from "../../../utils/envImporter.js";
 
 //Login User
 export const adminlogin = async (req, resp) => {

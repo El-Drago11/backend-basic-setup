@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs';
-import { JWT_EXPIRY, JWT_SECRET } from '../config/jwtConfig.js';
+import { JWT_EXPIRY, JWT_SECRET } from './envImporter.js';
 
 
 // Generate JWT token

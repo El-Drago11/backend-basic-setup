@@ -1,6 +1,7 @@
-import { JWT_SECRET } from "../config/jwtConfig.js";
+
 import User from "../src/models/UserModel.js";
 import { verifyToken } from "../utils/auth.js";
+import { JWT_SECRET } from "../utils/envImporter.js";
 import handleResponse from "../utils/http-response.js";
 
 export const authenticateToken = async (req, res, next) => {

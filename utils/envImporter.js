@@ -13,3 +13,7 @@ export const email_from = env_process.EMAIL_FROM;
 // Frontend urls
 export const local_frontend = env_process.FRONT_URL_LOCAL;
 export const local_admin = env_process.ADMIN_URL_LOCAL;
+
+// JWT
+export const JWT_SECRET = env_process.JWT_SECRET_KEY;
+export const JWT_EXPIRY = env_process.JWT_EXPIRY;
